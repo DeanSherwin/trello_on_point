@@ -1,7 +1,4 @@
-console.log("EXT LOADED");
-// need to wait for whole DOM to load as Trello loads so much JS to populate cards
-window.onload = function (){
-  console.log("RUN");
+function calcPoints (){
   var cardLists = document.getElementsByClassName("js-list list-wrapper");
   for (var i = 0; i < cardLists.length; i++){
     var listPoints = 0;
@@ -22,7 +19,32 @@ window.onload = function (){
     // prepend list score to list title
     var listHeader = currentList.querySelector('.list-header-name');
     var currentTitle = listHeader.value;
-    console.log(listHeader);
+    // check if already has score
+    var existingScore = currentTitle.match(regex);
+    if(existingScore != null){
+      currentTitle = currentTitle.split("] ")[1]
+    }
     listHeader.value = '[' + listPoints.toString() +'] ' + currentTitle;
   }
 }
+
+// handle navigaton by clicking on board
+document.addEventListener('click', function(){
+    if(window.location.href == 'https://trello.com/'){
+      // click was on home, might be clicking into a board
+      setTimeout(calcPoints, 800)
+    }
+}, false);
+
+// handle potential drop event when moving cards
+document.addEventListener('mouseup', function(e){
+  calcPoints()
+}, false);
+
+// handle back/forward button events
+window.addEventListener('popstate', function(event) {
+  setTimeout(calcPoints, 800)
+}, false);
+
+// handle page refresh or arriving directly on board
+window.onload = calcPoints;
