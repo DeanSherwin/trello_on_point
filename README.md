@@ -1,2 +1,2 @@
-# trello_powerup
-A Chrome extensions to add some powerup functionality and my own custom features to trello for free
+# *Trello*:tm: On Point :point_up:
+A Google Chrome extension for measuring Trello cards' complexity/difficulty on a point score basis.
