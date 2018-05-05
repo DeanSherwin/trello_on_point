@@ -11,5 +11,8 @@
       ],
     "permissions": [
       "activeTab"
-    ]
+    ],
+    "icons": {
+        "128": "./assets/top-icon.png"
+    }
   }
