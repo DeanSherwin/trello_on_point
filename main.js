@@ -1,50 +1,60 @@
-function calcPoints (){
-  var cardLists = document.getElementsByClassName("js-list list-wrapper");
-  for (var i = 0; i < cardLists.length; i++){
-    var listPoints = 0;
-    var currentList = cardLists[i];
-    var cards = currentList.querySelectorAll(".list-card");
-    for (var j = 0; j < cards.length; j++){
-      // get card score from name and add it to listPoints
-      var card = cards[j];
-      var label = card.querySelector(".list-card-title").innerText;
-      var regex = /\[([0-9]+)\]/;
-      var matches = label.match(regex);
-      if(matches != null){
-          // if matchs, score will be the second match. Add it to listPoints
-          var cardScore = parseInt(matches[1]);
-          listPoints += cardScore;
+var points_regex = /\[([0-9]+)\]/;
+var valid_classes = ['list-card', 'card-short-id'];
+
+function calcPoints(){
+  var lists = document.querySelectorAll(".list-wrapper");
+  for (var list of lists){
+    var totalPoints = 0, cards = list.querySelectorAll(".list-card");
+
+    // Get card score from name and add it to totalPoints
+    for (var card of cards){
+      var label = card.querySelector(".list-card-title");
+      if (label !== null){
+        var matches = label.innerText.match(points_regex);
+        if (matches !== null){
+          totalPoints += parseInt(matches[1]); // Score is second regex match
+        }
       }
     }
-    // prepend list score to list title
-    var listHeader = currentList.querySelector('.list-header-name');
-    var currentTitle = listHeader.value;
-    // check if already has score
-    var existingScore = currentTitle.match(regex);
-    if(existingScore != null){
-      currentTitle = currentTitle.split("] ")[1]
+
+    // Prepend list score to list title
+    var listHeader = list.querySelector('.list-header-name');
+    var pointsNode = listHeader.parentNode.querySelector('.list-header-points');
+    if (pointsNode === null){
+      var newNode = document.createElement("H4");
+      newNode.className = 'list-header-points';
+      newNode.appendChild(document.createTextNode("[" + totalPoints + "]"));
+      listHeader.parentNode.insertBefore(newNode, listHeader);
+    } else {
+      pointsNode.innerText = "[" + totalPoints + "]";
     }
-    listHeader.value = '[' + listPoints.toString() +'] ' + currentTitle;
   }
 }
 
-// handle navigaton by clicking on board
-document.addEventListener('click', function(){
-    if(window.location.href == 'https://trello.com/'){
-      // click was on home, might be clicking into a board
-      setTimeout(calcPoints, 800)
-    }
-}, false);
 
-// handle potential drop event when moving cards
-document.addEventListener('mouseup', function(e){
-  calcPoints()
-}, false);
+function begin() {
+  // Initialise mutation observer
+  var observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+      for (var node of mutation.addedNodes) {
+        for (var cls of valid_classes){
+          if (node.classList && node.classList.contains(cls)){
+            calcPoints();
+          }
+        }
+      }
+    });
+  });
 
-// handle back/forward button events
-window.addEventListener('popstate', function(event) {
-  setTimeout(calcPoints, 800)
-}, false);
+  // Attach observer to card lists
+  var lists = document.querySelectorAll(".list-wrapper");
+  for (var list of lists){
+    observer.observe(list, {childList: true, subtree: true, characterData: true});
+  }
 
-// handle page refresh or arriving directly on board
-window.onload = calcPoints;
+  // Run calcPoints
+  calcPoints();
+}
+
+// Initialise script
+window.onload = begin;

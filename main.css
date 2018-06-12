@@ -1,0 +1,9 @@
+div.list div.list-header {
+  display: flex;
+}
+div.list h4.list-header-points {
+  margin: 0px;
+}
+div.list textarea.list-header-name {
+  margin-left: 0px;
+}
