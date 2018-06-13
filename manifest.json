@@ -1,6 +1,6 @@
   {
     "name": "Trello PowerUp",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "Trello PowerUps for Free",
     "manifest_version": 2,
     "content_scripts": [
